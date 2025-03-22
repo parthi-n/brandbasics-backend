@@ -1,5 +1,4 @@
-
-const User = require("../models/user");
+const prisma = require("../modules/prisma.module");
 const bcrypt = require("bcrypt");
 
 const createUser = async (userDetails) => {

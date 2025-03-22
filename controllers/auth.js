@@ -1,60 +1,75 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const User = require("../models/user");
-const userServices = require("../services/userServices");
+const prisma = require("../modules/prisma.module");
 
-
+const saltRounds = 12;
 
 const signUp = async (req, res) => {
-  try {
-    // Check if username already exists
-    const userInDatabase = await User.findOne({ username: req.body.username });
+	try {
+		// Check if username already exists
+		const userInDatabase = await prisma.user.findFirst({
+			where: {
+				username: req.body.username,
+			},
+		});
 
-    if (userInDatabase) {
-      return res.status(409).json({ error: "Username already taken." });
-    }
+		if (userInDatabase) {
+			return res.status(409).json({ error: "Username already taken." });
+		}
 
-    // Create the user
-    const user = await userServices.createUser(req.body);
+		// Create the user
+		const user = await prisma.user.create({
+			data: {
+				username: req.body.username,
+				hashedPassword: bcrypt.hashSync(req.body.password, saltRounds),
+				userType: req.body.userType || "user",
+			},
+		});
 
-    // Create JWT token payload
-    const payload = { username: user.username, _id: user._id };
+		// Create JWT token payload
+		const payload = { username: user.username, id: user.id };
 
-    // Sign the JWT token
-    const token = jwt.sign({ payload }, process.env.JWT_SECRET);
+		// Sign the JWT token
+		const token = jwt.sign({ payload }, process.env.JWT_SECRET);
 
-    // Send response with token
-    res.status(201).json({ token });
-  } catch (error) {
-    res.status(500).json({ error: error.message }); 
-  }
+		// Send response with token
+		res.status(201).json({ token });
+	} catch (error) {
+		res.status(500).json({ error: error.message });
+	}
 };
 
 const signIn = async (req, res) => {
-//   console.log("Request body:", req.body); // Log the request body for debugging
-  try {
-    const user = await User.findOne({ username: req.body.username });
-    if (!user) {
-      return res.status(401).json({ error: "Invalid credentials." });
-    }
+	try {
+		const user = await prisma.user.findFirst({
+			where: {
+				username: req.body.username,
+			},
+		});
 
-    // Check if the password exists and compare it
-    if (!req.body.password || !user.password) {
-      return res.status(400).json({ error: "Missing password or hashed password." });
-    }
+		if (!user) {
+			return res.status(401).json({ error: "Invalid credentials." });
+		}
+		console.log(req.body.password);
+		console.log(user.hashedPassword);
 
-    const isPasswordCorrect = bcrypt.compareSync(req.body.password, user.password);
-    if (!isPasswordCorrect) {
-      return res.status(401).json({ error: "Invalid credentials." });
-    }
+		// Check if the password exists and compare it
+		if (!req.body.password || !user.hashedPassword) {
+			return res.status(400).json({ error: "Missing password or hashed password." });
+		}
 
-    const payload = { username: user.username, _id: user._id };
-    const token = jwt.sign({ payload }, process.env.JWT_SECRET);
+		const isPasswordCorrect = bcrypt.compareSync(req.body.password, user.hashedPassword);
+		if (!isPasswordCorrect) {
+			return res.status(401).json({ error: "Invalid credentials." });
+		}
 
-    res.status(200).json({ token });
-  } catch (error) {
-    res.status(500).json({ error: error.message }); 
-  }
+		const payload = { username: user.username, id: user.id };
+		const token = jwt.sign({ payload }, process.env.JWT_SECRET);
+
+		res.status(200).json({ token });
+	} catch (error) {
+		res.status(500).json({ error: error.message });
+	}
 };
 
 module.exports = { signUp, signIn };
