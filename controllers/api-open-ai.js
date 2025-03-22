@@ -1,26 +1,37 @@
-const OpenAI = require("openai");
+const { getBrandStrategy } = require("../services/openaiServices");
+const parseJson = require("../utils/parseJson");
+const { generateStrategyUserMessage } = require("../ai-prompts/openAiPrompts");
 
-const openai = new OpenAI({
-	apiKey: process.env.OPENAI_API_KEY,
-});
+const generateStrategy = async (req, res) => {
+	const { brandName, category, productValue, customInsights, desiredPersona, brandVision } = req.body;
 
-const chat = async (req, res) => {
-	const userInput = req.body;
-	const prompt = "Why is the sky blue?";
+	const userMessage = generateStrategyUserMessage(brandName, category, productValue, customInsights, desiredPersona, brandVision);
 
 	try {
-		const completion = await openai.chat.completions.create({
-			model: "gpt-4o-mini",
-			messages: [{ role: "user", content: prompt }],
-			max_tokens: 2048,
-			temperature: 1,
-			top_p: 1,
-		});
+		const response = await getBrandStrategy(userMessage);
 
-		res.json({ output: completion.choices[0].message.content });
-	} catch (err) {
-		res.status(500).json({ error: err.message });
+		// Extract the raw response content
+		const aiOutput = response.choices[0].message.content;
+		const parsedOutput = parseJson(aiOutput);
+
+		if (parsedOutput.success) {
+			// Successfully parsed the output
+			return res.status(200).json({
+				//success: true,
+				output: parsedOutput.parsedOutput,
+			});
+		} else {
+			// Return raw output if parsing fails
+			return res.status(200).json({
+				//success: false,
+				output: parsedOutput.rawOutput,
+				error: parsedOutput.error,
+			});
+		}
+	} catch (error) {
+		console.error("🚨 OpenAI Error:", error.message);
+		res.status(500).json({ error: "Failed to generate brand strategy" });
 	}
 };
 
-module.exports = { chat };
+module.exports = { generateStrategy };
