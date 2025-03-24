@@ -22,6 +22,7 @@ enum userTypes {
 model User {
   id              String            @id @default(uuid())
   username        String            @unique
+  email           String            @unique
   hashedPassword  String
   userType        userTypes
   Project         Project[]
@@ -52,14 +53,14 @@ model insights_input {
 model insights_output {
   id               String    @id @default(uuid())
   summary          String?
-  keyWords         String[]?
+  keyWords         String[]
   brandBeliefs     String?
-  brandPersonality String[]?
-  brandBenefits    String[]?
-  ReasonsToBelieve String[]?
+  brandPersonality String[]
+  brandBenefits    String[]
+  ReasonsToBelieve String[]
   brandPosition    String?
   brandPromise     String?
-  targetAudience   String[]?
+  targetAudience   String[]
   projectId        String
   Project          Project   @relation(fields: [projectId], references: [id])
   userID           String
