@@ -8,8 +8,6 @@ const saltRounds = 12;
 
 const signUp = async (req, res) => {
 	try {
-		const { username, email, password, userType } = req.body;
-
 		// Check if email already exists
 		const userInDatabase = await prisma.user.findFirst({
 			where: {
@@ -17,23 +15,16 @@ const signUp = async (req, res) => {
 			},
 		});
 
-		// Validate username
-		if (!username || !InputValidator.validateUsername(username)) {
-			return res.status(400).json({ error: "Invalid username. It should be alphanumeric and between 3 to 20 characters." });
-		}
-
-		// Validate email
-		if (!email || !InputValidator.validateEmail(email)) {
-			return res.status(400).json({ error: "Invalid email format." });
-		}
-
-		// Validate password
-		if (!password || !InputValidator.validatePassword(password)) {
-			return res.status(400).json({ error: "Password must be at least 8 characters long, and include a number and a special character." });
-		}
-
 		if (userInDatabase) {
 			return res.status(409).json({ error: "Username already taken." });
+		}
+
+		// Validate inputs
+		const inputData = req.body;
+		const validationResult = InputValidator(inputData, res);
+
+		if (validationResult !== true) {
+			return;
 		}
 
 		// Create the user
@@ -46,15 +37,32 @@ const signUp = async (req, res) => {
 			},
 		});
 
-		// Create JWT token payload
+		// Create JWT token
 		const payload = { username: user.username, id: user.id };
-
-		// Sign the JWT token
 		const token = jwt.sign({ payload }, process.env.JWT_SECRET, { expiresIn: "1h" });
 
-		z;
+		// Set the JWT token in an HTTP-only cookie
+		res.setHeader(
+			"Set-Cookie",
+			cookie.serialize("token", token, {
+				httpOnly: true, // Ensure the cookie is not accessible via JavaScript
+				secure: process.env.NODE_ENV === "production", // Only use Secure cookies in production
+				maxAge: 60 * 60, // 1 hour expiration
+				path: "/", // Available on all routes
+			})
+		);
 
-		res.status(201).json({ message: "User created successfully." });
+		const data = {
+			message: "User created successfully.",
+			user: {
+				username: user.username,
+				email: user.email,
+				userType: user.userType,
+				userId: user.id,
+			},
+		};
+
+		res.status(201).json(data);
 	} catch (error) {
 		res.status(500).json({ error: error.message });
 	}
@@ -85,8 +93,6 @@ const signIn = async (req, res) => {
 		const payload = { username: user.username, id: user.id };
 		const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "1h" });
 
-		console.log(token);
-
 		// Set the JWT token in an HTTP-only cookie
 		res.setHeader(
 			"Set-Cookie",
@@ -98,10 +104,28 @@ const signIn = async (req, res) => {
 			})
 		);
 
-		res.status(200).json({ message: "Login successful." });
+		const data = {
+			message: "User signed in successfully.",
+			user: {
+				username: user.username,
+				email: user.email,
+				userType: user.userType,
+				userId: user.id,
+			},
+		};
+
+		res.status(200).json(data);
 	} catch (error) {
 		res.status(500).json({ error: error.message });
 	}
+};
+
+const signOut = async (req, res) => {
+	// Clear the HTTP-only cookie
+	res.clearCookie("token", { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "Strict" });
+
+	// Respond with a message or success status
+	res.json({ message: "Successfully signed out" });
 };
 
 const verifyToken = async (req, res) => {
@@ -125,4 +149,4 @@ const verifyToken = async (req, res) => {
 	}
 };
 
-module.exports = { signUp, signIn, verifyToken };
+module.exports = { signUp, signIn, signOut, verifyToken };

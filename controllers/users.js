@@ -10,26 +10,27 @@ const index = async (req, res) => {
 	}
 };
 
-const get = async (req, res) => {
+const userInfo = async (req, res) => {
+	console.log(req.user.id);
+	const user = await prisma.user.findFirst({
+		where: {
+			id: req.user.id,
+		},
+	});
 	try {
-		if (req.user.id !== req.params.userId) {
-			return res.status(403).json({ err: "Unauthorized" });
-		}
-
-		const user = await prisma.user.findFirst({
-			where: {
-				username: req.body.username,
+		const data = {
+			message: "User data retrieved successfully.",
+			user: {
+				username: user.username,
+				email: user.email,
+				userType: user.userType,
+				userId: user.id,
 			},
-		});
-
-		if (!user) {
-			return res.status(404).json({ err: "User not found." });
-		}
-
-		res.json({ user });
+		};
+		res.json(data);
 	} catch (err) {
-		res.status(500).json({ err: err.message });
+		res.status(401).json({ isValid: false, error: "Invalid or expired token" });
 	}
 };
 
-module.exports = { index, get };
+module.exports = { index, userInfo };

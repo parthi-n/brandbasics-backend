@@ -2,9 +2,8 @@ const { getBrandStrategy } = require("../services/openaiServices");
 const parseJson = require("../utils/parseJson");
 const { generateStrategyUserMessage } = require("../ai-prompts/openAiPrompts");
 
-const generateStrategy = async (req, res) => {
-	const { brandName, category, productValue, audienceInsights, desiredPersona, brandVision } = req.body;
-
+const createQuickStrategy = async (inputData) => {
+	const { brandName, category, productValue, audienceInsights, desiredPersona, brandVision } = inputData;
 	const userMessage = generateStrategyUserMessage(brandName, category, productValue, audienceInsights, desiredPersona, brandVision);
 
 	try {
@@ -16,22 +15,20 @@ const generateStrategy = async (req, res) => {
 
 		if (parsedOutput.success) {
 			// Successfully parsed the output
-			return res.status(200).json({
-				//success: true,
-				output: parsedOutput.parsedOutput,
-			});
+			return {
+				success: true,
+				strategy: parsedOutput.parsedOutput,
+			};
 		} else {
 			// Return raw output if parsing fails
-			return res.status(200).json({
-				//success: false,
-				output: parsedOutput.rawOutput,
+			return {
+				success: false,
+				//	output: parsedOutput.rawOutput,
 				error: parsedOutput.error,
-			});
+			};
 		}
 	} catch (error) {
 		console.error("🚨 OpenAI Error:", error.message);
-		res.status(500).json({ error: "Failed to generate brand strategy" });
 	}
 };
-
-module.exports = { generateStrategy };
+module.exports = { createQuickStrategy };

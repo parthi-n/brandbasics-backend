@@ -10,18 +10,18 @@ const logger = require("morgan");
 const verifyJwt = require("./controllers/verify-jwt");
 const authRouter = require("./routes/auth");
 const usersRouter = require("./routes/users");
-const wtRouter = require("./routes/api-wt")
-const openAiRouter = require("./routes/api-open-ai")
+const wtRouter = require("./routes/api-wt");
+const openAiRouter = require("./routes/api-open-ai");
+const projectsRouter = require("./routes/projects");
+const strategyGeneratorRouter = require("./routes/strategy-generator")
 
 // Port
 const port = process.env.PORT || 3000;
 
-
 const corsOptions = {
 	origin: "http://localhost:3000", // replace with your frontend URL
 	credentials: true, // Allow cookies to be sent with the request
-  };
-
+};
 
 // Middleware
 app.use(cors(corsOptions));
@@ -33,7 +33,8 @@ app.use("/auth", authRouter);
 app.use("/users", usersRouter);
 app.use("/api-wt", wtRouter);
 app.use("/api-openai", openAiRouter);
-
+app.use("/projects", projectsRouter);
+app.use("/strategy", strategyGeneratorRouter);
 
 // Start the server and listen on port 3000
 app.listen(port, () => {

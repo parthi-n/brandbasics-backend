@@ -20,49 +20,60 @@ enum userTypes {
 }
 
 model User {
-  id              String            @id @default(uuid())
-  username        String            @unique
-  email           String            @unique
-  hashedPassword  String
-  userType        userTypes
-  Project         Project[]
-  insights_input  insights_input[]
-  insights_output insights_output[]
+  id                  String                @id @default(uuid())
+  username            String                @unique
+  email               String                @unique
+  hashedPassword      String
+  userType            userTypes
+  project             Project[]
+  QuickStrategyInput  QuickStrategyInput[]
+  QuickStrategyOutput QuickStrategyOutput[]
 }
 
 model Project {
-  id              String            @id @default(uuid())
-  projectName     String
-  projectOwnerId  String
-  projectOwner    User              @relation(fields: [projectOwnerId], references: [id])
-  createdAt       DateTime          @default(now())
-  updatedAt       DateTime          @updatedAt
-  insights_input  insights_input[]
-  insights_output insights_output[]
+  id                  String                @id @default(uuid())
+  projectName         String
+  projectOwnerId      String
+  projectOwner        User                  @relation(fields: [projectOwnerId], references: [id])
+  createdAt           DateTime              @default(now())
+  updatedAt           DateTime              @updatedAt
+  industry            String?
+  QuickStrategyInput  QuickStrategyInput[]
+  QuickStrategyOutput QuickStrategyOutput[]
 }
 
-model insights_input {
-  id        String  @id @default(uuid())
-  text      String?
-  userID    String
-  user      User    @relation(fields: [userID], references: [id])
-  projectId String
-  Project   Project @relation(fields: [projectId], references: [id])
+model QuickStrategyInput {
+  id                  String               @id @default(uuid())
+  userId              String
+  user                User                 @relation(fields: [userId], references: [id])
+  projectId           String
+  project             Project              @relation(fields: [projectId], references: [id])
+  brandName           String?
+  category            String?
+  productValue        String?
+  audienceInsights    String?
+  desiredPersona      String?
+  brandVision         String?
+  quickStrategyOutput QuickStrategyOutput?
 }
 
-model insights_output {
-  id               String    @id @default(uuid())
-  summary          String?
-  keyWords         String[]
-  brandBeliefs     String?
-  brandPersonality String[]
-  brandBenefits    String[]
-  ReasonsToBelieve String[]
-  brandPosition    String?
-  brandPromise     String?
-  targetAudience   String[]
-  projectId        String
-  Project          Project   @relation(fields: [projectId], references: [id])
-  userID           String
-  user             User      @relation(fields: [userID], references: [id])
+model QuickStrategyOutput {
+  id                   String              @id @default(uuid())
+  brandPosition        String[]
+  brandMessaging       String[]
+  brandPromise         String[]
+  reasonsToBelieve     String[]
+  brandPersonality     String[]
+  brandBenefits        String[]
+  brandBeliefs         String[]
+  brandMission         String[]
+  brandStory           String[]
+  brandArchetype       String[]
+  toneOfVoice          String[]
+  projectId            String
+  project              Project             @relation(fields: [projectId], references: [id])
+  userId               String
+  user                 User                @relation(fields: [userId], references: [id])
+  quickStrategyInputId String?             @unique
+  quickStrategyInput   QuickStrategyInput? @relation(fields: [quickStrategyInputId], references: [id])
 }

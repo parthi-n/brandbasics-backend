@@ -4,7 +4,7 @@ const verifyToken = require("../middleware/verify-token");
 const usersCtrl = require("../controllers/users");
 
 router.get("/", verifyToken, usersCtrl.index);
-router.get("/:userId",verifyToken, usersCtrl.get);
+router.post("/user-info",verifyToken, usersCtrl.userInfo);
 
 
 module.exports = router;
