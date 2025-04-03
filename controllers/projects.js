@@ -1,11 +1,11 @@
 const prisma = require("../modules/prisma.module");
 
 // Index User Projects
-const IndexUserProjects = async (req, res) => {
+const indexUserProjects = async (req, res) => {
 	try {
 		const user = await prisma.user.findFirst({
 			where: {
-				id: req.params.userId,
+				id: req.user.id,
 			},
 		});
 
@@ -25,11 +25,11 @@ const IndexUserProjects = async (req, res) => {
 	}
 };
 
-const ProjectDetails = async (req, res) => {
+const retrieveProjectDetails = async (req, res) => {
 	try {
 		const user = await prisma.user.findFirst({
 			where: {
-				id: req.params.userId,
+				id: req.user.id,
 			},
 		});
 
@@ -37,26 +37,31 @@ const ProjectDetails = async (req, res) => {
 			return res.status(401).json({ error: "Invalid credentials." });
 		}
 
-		const project = await prisma.project.findUnique({
+		const project = await prisma.project.findFirst({
 			where: {
 				id: req.params.projectId,
 			},
 		});
 
-		res.status(201).json(project);
+		if (!project) {
+			return res.status(404).json({ error: "Project not found." });
+		}
+
+		res.status(200).json(project);
 	} catch (error) {
+		console.error("Error retrieving project:", error);
 		res.status(500).json({ error: error.message });
 	}
 };
 
 // Create Project
-const create = async (req, res) => {
+const createProject = async (req, res) => {
 	try {
 		// Check if email already exists
 		const projectInDatabase = await prisma.project.findFirst({
 			where: {
 				projectName: req.body.projectName,
-				projectOwnerId: req.body.projectOwnerId,
+				projectOwnerId: req.user.id,
 			},
 		});
 
@@ -69,16 +74,13 @@ const create = async (req, res) => {
 		const project = await prisma.project.create({
 			data: {
 				projectName: req.body.projectName,
-				projectOwnerId: req.body.projectOwnerId,
+				projectOwnerId: req.user.id,
 			},
 		});
 
 		const data = {
 			message: "Project created successfully.",
-			project: {
-				projectName: project.projectName,
-				projectOwnerId: project.projectOwnerId,
-			},
+			project: project,
 		};
 
 		res.status(201).json(data);
@@ -87,4 +89,4 @@ const create = async (req, res) => {
 	}
 };
 
-module.exports = { IndexUserProjects, ProjectDetails,  create };
+module.exports = { indexUserProjects, retrieveProjectDetails, createProject };

@@ -9,12 +9,13 @@ const systemMessage = {
                 "reasonsToBelieve": [], // Provide between 3 to 5 bullet points
                 "brandPersonality": [], // Provide up to 5 descriptive words
                 "brandBenefits": [],    // Provide between 3 to 5 bullet points
-                "brandBeliefs": []      // Provide between 3 to 5 belief statements
-                "brandStory": []        // Provide a Narrative that explains the brand’s journey and mission, it Should create an emotional connection
-                "brandMission": []      // Format the mission statement using this structure: [Who you are] + [What you offer] + [Impact/Goal]
-                "brandArchetype": []    // provide one Archetype(e.g. "Explorer", "Caregiver", "Rebel")
-                "toneOfVoice": []       // (e.g. Casual/Formal/Playful/etc.)
-                }
+                "brandBeliefs": [],      // Provide between 3 to 5 belief statements
+                "brandStory": [],        // Provide a Narrative that explains the brand’s journey and mission, it Should create an emotional connection
+                "brandMission": [],      // Format the mission statement using this structure: [Who you are] + [What you offer] + [Impact/Goal]
+                "brandArchetype": [],    // provide one Archetype(e.g. "Explorer", "Caregiver", "Rebel")
+                "toneOfVoice": [],       // (e.g. Casual/Formal/Playful/etc.)
+                "colorPalette": []       // Suggest a set of brand colors representing the tone/personality/position in hex format - 5 colors
+              }
               Keep responses concise, professional, and relevant to modern branding practices.  Align the outputs with core branding principles like clarity, emotional connection, differentiation, and authenticity`,
 };
 

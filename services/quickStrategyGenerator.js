@@ -2,7 +2,7 @@ const { getBrandStrategy } = require("../services/openaiServices");
 const parseJson = require("../utils/parseJson");
 const { generateStrategyUserMessage } = require("../ai-prompts/openAiPrompts");
 
-const createQuickStrategy = async (inputData) => {
+const generateQuickStrategy = async (inputData) => {
 	const { brandName, category, productValue, audienceInsights, desiredPersona, brandVision } = inputData;
 	const userMessage = generateStrategyUserMessage(brandName, category, productValue, audienceInsights, desiredPersona, brandVision);
 
@@ -31,4 +31,4 @@ const createQuickStrategy = async (inputData) => {
 		console.error("🚨 OpenAI Error:", error.message);
 	}
 };
-module.exports = { createQuickStrategy };
+module.exports = { generateQuickStrategy };

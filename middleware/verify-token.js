@@ -25,11 +25,11 @@ function verifyToken(req, res, next) {
 
 		// Verify the token
 		const decoded = jwt.verify(token, process.env.JWT_SECRET);
+		//console.log("decoded", decoded)
 
 		// Attach user info to the request object
 		req.user = decoded;
 
-		// Proceed to the next middleware
 		next();
 	} catch (err) {
 		res.status(401).json({ err: "Invalid token." });

@@ -16,7 +16,7 @@ const projectsRouter = require("./routes/projects");
 const strategyGeneratorRouter = require("./routes/strategy-generator")
 
 // Port
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3500;
 
 const corsOptions = {
 	origin: "http://localhost:3000", // replace with your frontend URL

@@ -129,19 +129,28 @@ const signOut = async (req, res) => {
 };
 
 const verifyToken = async (req, res) => {
-	// Check if the Authorization header exists
-	const authorizationHeader = req.headers.authorization;
-	if (!authorizationHeader) {
-		return res.status(400).json({ isValid: false, error: "Authorization header missing" });
-	}
-
-	const token = authorizationHeader.split(" ")[1];
-
-	if (!token) {
-		return res.status(400).json({ isValid: false, error: "Token missing from authorization header" });
-	}
+	const cookie = req.headers.cookie;
 
 	try {
+		// Look for token in cookies
+		if (!cookie) {
+			return res.status(400).json({ isValid: false, error: "Cookie header missing" });
+		}
+
+		// Split cookies to find the token
+		const tokenCookie = cookie.split(";").find((c) => c.trim().startsWith("token="));
+
+		if (!tokenCookie) {
+			return res.status(400).json({ isValid: false, error: "Token missing from cookies" });
+		}
+
+		// Extract the token value
+		const token = tokenCookie.split("=")[1];
+
+		if (!token) {
+			return res.status(400).json({ isValid: false, error: "Token missing from cookies" });
+		}
+
 		const decoded = jwt.verify(token, process.env.JWT_SECRET);
 		res.json({ isValid: true });
 	} catch (err) {

@@ -3,34 +3,40 @@ const prisma = require("../modules/prisma.module");
 const index = async (req, res) => {
 	try {
 		const users = await prisma.user.findMany();
-
 		res.json(users);
 	} catch (err) {
 		res.status(500).json({ err: err.message });
 	}
 };
 
-const userInfo = async (req, res) => {
-	console.log(req.user.id);
-	const user = await prisma.user.findFirst({
-		where: {
-			id: req.user.id,
-		},
-	});
+const retrieveUserData = async (req, res) => {
 	try {
+		const user = await prisma.user.findFirst({
+			where: {
+				id: req.user.id,
+			},
+			select: {
+				id: true,
+				username: true,
+				email: true,
+				userType: true,
+				project: true,
+				QuickStrategyOutput: {
+					include: { quickStrategyInput: true },
+				},
+			},
+		});
+
 		const data = {
 			message: "User data retrieved successfully.",
-			user: {
-				username: user.username,
-				email: user.email,
-				userType: user.userType,
-				userId: user.id,
-			},
+			user,
 		};
+
+		//console.log("retrieveUserData", data.user.project);
 		res.json(data);
 	} catch (err) {
 		res.status(401).json({ isValid: false, error: "Invalid or expired token" });
 	}
 };
 
-module.exports = { index, userInfo };
+module.exports = { index, retrieveUserData };

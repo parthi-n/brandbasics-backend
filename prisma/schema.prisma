@@ -70,6 +70,7 @@ model QuickStrategyOutput {
   brandStory           String[]
   brandArchetype       String[]
   toneOfVoice          String[]
+  colorPalette         String[]
   projectId            String
   project              Project             @relation(fields: [projectId], references: [id])
   userId               String

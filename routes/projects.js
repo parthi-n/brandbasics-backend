@@ -3,8 +3,8 @@ const router = express.Router();
 const verifyToken = require("../middleware/verify-token");
 const projectsCtrl = require("../controllers/projects");
 
-router.post("/create", projectsCtrl.create);
-router.post("/:userId", projectsCtrl.IndexUserProjects);
-router.post("/:userId/:projectId", projectsCtrl.ProjectDetails);
+router.post("/create", verifyToken, projectsCtrl.createProject);
+router.post("/:userId", verifyToken, projectsCtrl.indexUserProjects);
+router.get("/:projectId", verifyToken, projectsCtrl.retrieveProjectDetails);
 
 module.exports = router;
