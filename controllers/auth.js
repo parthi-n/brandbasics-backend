@@ -49,7 +49,7 @@ const signUp = async (req, res) => {
 				secure: process.env.NODE_ENV === "production", // Only use Secure cookies in production
 				maxAge: 60 * 60, // 1 hour expiration
 				path: "/", // Available on all routes
-				sameSite: "Lax",
+				sameSite: "Strict",
 			})
 		);
 
@@ -99,11 +99,10 @@ const signIn = async (req, res) => {
 			"Set-Cookie",
 			cookie.serialize("token", token, {
 				httpOnly: true, // Ensure the cookie is not accessible via JavaScript
-				//secure: process.env.NODE_ENV === "production", // Only use Secure cookies in production
-				secure: false, // For testing purposes, set to false
+				secure: process.env.NODE_ENV === "production", // Only use Secure cookies in production
 				maxAge: 60 * 60, // 1 hour expiration
 				path: "/", // Available on all routes
-				sameSite: "Lax",
+				sameSite: "Strict",
 			})
 		);
 
