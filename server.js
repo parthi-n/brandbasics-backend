@@ -13,13 +13,13 @@ const usersRouter = require("./routes/users");
 const wtRouter = require("./routes/api-wt");
 const openAiRouter = require("./routes/api-open-ai");
 const projectsRouter = require("./routes/projects");
-const strategyGeneratorRouter = require("./routes/strategy-generator")
+const strategyGeneratorRouter = require("./routes/strategy-generator");
 
 // Port
 const port = process.env.PORT || 3500;
 
 const corsOptions = {
-	origin: "http://localhost:3000", // replace with your frontend URL
+	origin: process.env.FRONTEND_URL, // replace with your frontend URL
 	credentials: true, // Allow cookies to be sent with the request
 };
 
