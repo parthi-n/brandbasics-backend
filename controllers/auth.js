@@ -49,6 +49,7 @@ const signUp = async (req, res) => {
 				secure: process.env.NODE_ENV === "production", // Only use Secure cookies in production
 				maxAge: 60 * 60, // 1 hour expiration
 				path: "/", // Available on all routes
+				sameSite: "None",
 			})
 		);
 
@@ -101,6 +102,7 @@ const signIn = async (req, res) => {
 				secure: process.env.NODE_ENV === "production", // Only use Secure cookies in production
 				maxAge: 60 * 60, // 1 hour expiration
 				path: "/", // Available on all routes
+				sameSite: "None",
 			})
 		);
 
