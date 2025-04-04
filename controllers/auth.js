@@ -95,6 +95,7 @@ const signIn = async (req, res) => {
 
 		const payload = { username: user.username, id: user.id };
 		const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "1h" });
+		console.log("token", token);
 
 		// Set the JWT token in an HTTP-only cookie
 		res.setHeader(
@@ -116,6 +117,7 @@ const signIn = async (req, res) => {
 				userType: user.userType,
 				userId: user.id,
 			},
+			token: token,
 		};
 
 		res.status(200).json(data);
