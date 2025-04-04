@@ -61,6 +61,7 @@ const signUp = async (req, res) => {
 				userType: user.userType,
 				userId: user.id,
 			},
+			token: token,
 		};
 
 		res.status(201).json(data);
