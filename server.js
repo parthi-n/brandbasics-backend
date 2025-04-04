@@ -19,11 +19,10 @@ const strategyGeneratorRouter = require("./routes/strategy-generator");
 const port = process.env.PORT || 3500;
 
 const corsOptions = {
-	origin: process.env.FRONTEND_URL, // replace with your frontend URL
-	credentials: true, // Allow cookies to be sent with the request
+	origin: process.env.FRONTEND_URL, 
+	credentials: true, 
 };
 
-console.log(corsOptions.origin);
 
 // Middleware
 app.use(cors(corsOptions));
