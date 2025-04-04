@@ -40,6 +40,7 @@ const signUp = async (req, res) => {
 		// Create JWT token
 		const payload = { username: user.username, id: user.id };
 		const token = jwt.sign({ payload }, process.env.JWT_SECRET, { expiresIn: "1h" });
+		console.log("token", token);
 
 		// Set the JWT token in an HTTP-only cookie
 		res.setHeader(
