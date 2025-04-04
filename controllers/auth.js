@@ -46,7 +46,7 @@ const signUp = async (req, res) => {
 		res.setHeader(
 			"Set-Cookie",
 			cookie.serialize("token", token, {
-				httpOnly: true, // Ensure the cookie is not accessible via JavaScript
+				httpOnly: false, // Ensure the cookie is not accessible via JavaScript
 				secure: process.env.NODE_ENV === "production", // Only use Secure cookies in production
 				maxAge: 60 * 60, // 1 hour expiration
 				path: "/", // Available on all routes
@@ -101,7 +101,7 @@ const signIn = async (req, res) => {
 		res.setHeader(
 			"Set-Cookie",
 			cookie.serialize("token", token, {
-				httpOnly: true, // Ensure the cookie is not accessible via JavaScript
+				httpOnly: false, // Ensure the cookie is not accessible via JavaScript
 				secure: process.env.NODE_ENV === "production", // Only use Secure cookies in production
 				maxAge: 60 * 60, // 1 hour expiration
 				path: "/", // Available on all routes
